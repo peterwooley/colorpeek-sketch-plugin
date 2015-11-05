@@ -1,0 +1,37 @@
+// Open selected layer colors in Colorpeek (shift control c)
+var onRun = function(context) {
+    var doc = context.document
+    var artboard = [[doc currentPage] currentArtboard] || [doc currentPage];
+
+    if ([artboard class] == "MSPage") {
+        doc.showMessage("You must create almost an artboard.");
+    } else {
+        var artboardname = [artboard name];
+        var layer = context.selection[0];
+
+      var fill = null;
+      var border = null;
+
+      switch ([layer class]) {
+        case MSTextLayer:
+              fill = layer.textColor();
+          break;
+          default:
+              if (layer.style().fills().count() > 0) {
+                  fill = layer.style().fills().firstObject().color();
+              }
+              if (layer.style().borders().count() > 0) {
+                  border = layer.style().borders().firstObject().color();
+              }
+              break;
+      }
+
+      var colorPeekArguments = fill.hexValue().toString();
+      if(border && fill.hexValue().toString() != border.hexValue().toString()) {
+          colorPeekArguments += "," + border.hexValue().toString();
+      }
+      var colorPeekUrl = "http://colorpeek.com/#"+colorPeekArguments;
+      var url = [NSURL URLWithString:colorPeekUrl];
+        [[NSWorkspace sharedWorkspace] openURL:url];
+    }
+};
