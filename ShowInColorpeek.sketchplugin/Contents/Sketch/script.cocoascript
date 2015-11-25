@@ -1,37 +1,96 @@
 // Open selected layer colors in Colorpeek (shift control c)
+
 var onRun = function(context) {
-    var doc = context.document
-    var artboard = [[doc currentPage] currentArtboard] || [doc currentPage];
+  var selection = context.selection,
+      doc = context.document,
+      layers,
+      colors;
 
-    if ([artboard class] == "MSPage") {
-        doc.showMessage("You must create almost an artboard.");
-    } else {
-        var artboardname = [artboard name];
-        var layer = context.selection[0];
+  layers = gatherSelectedLayers(selection);
+  
+  if(!layers.length) {
+    doc.showMessage("Select a layer or set of layer groups to open them in Colorpeek.");
+    return false;
+  }
 
-      var fill = null;
-      var border = null;
+  colors = gatherColors(layers);
 
-      switch ([layer class]) {
-        case MSTextLayer:
-              fill = layer.textColor();
-          break;
-          default:
-              if (layer.style().fills().count() > 0) {
-                  fill = layer.style().fills().firstObject().color();
-              }
-              if (layer.style().borders().count() > 0) {
-                  border = layer.style().borders().firstObject().color();
-              }
-              break;
-      }
-
-      var colorPeekArguments = fill.hexValue().toString();
-      if(border && fill.hexValue().toString() != border.hexValue().toString()) {
-          colorPeekArguments += "," + border.hexValue().toString();
-      }
-      var colorPeekUrl = "http://colorpeek.com/#"+colorPeekArguments;
-      var url = [NSURL URLWithString:colorPeekUrl];
-        [[NSWorkspace sharedWorkspace] openURL:url];
-    }
+  openInColorpeek(colors);
 };
+
+var gatherSelectedLayers = function(selection) {
+  var layers = [];
+
+  for(var i = 0; i < selection.count(); i++) {
+    selected = selection[i];
+    if([selected class] === MSLayerGroup) {
+      layers = layers.concat(getChildrenAsArray(selected.children()));
+    } else {
+      layers.push(selected);
+    }
+  }
+
+  return layers;
+}
+
+var gatherColors = function(layers) {
+  var colors = [];
+
+  for(var i = 0; i < layers.length; i++) {
+    layer = layers[i];
+    switch ([layer class]) {
+      case MSTextLayer:
+        colors.push(toRgba(layer.textColor()));
+      default:
+        if(layer.style) {
+          if (layer.style().fills().count() > 0) {
+            colors.push(toRgba(layer.style().fills().firstObject().color()));
+          }
+          if (layer.style().borders().count() > 0) {
+            colors.push(toRgba(layer.style().borders().firstObject().color()));
+          }
+        }
+        break;
+    }
+  }
+
+  return colors;
+}
+
+var openInColorpeek = function(colors) {
+  var colorPeekArguments = unique(colors).join(',');
+  var colorPeekUrl = "http://colorpeek.com/#"+escape(colorPeekArguments);
+  var url = [NSURL URLWithString:colorPeekUrl];
+  [[NSWorkspace sharedWorkspace] openURL:url];
+}
+
+// https://github.com/getflourish/Sketch-Style-Inventory/search?utf8=✓&q=rgb&type=Code
+var toRgba = function(color) {
+  log(color);
+  return "rgba(" + String(Math.ceil(color.red().toFixed(2) * 255)) + ", " + String(Math.ceil(color.green().toFixed(2) * 255)) + ", " + String(Math.ceil(color.blue().toFixed(2) * 255)) + "," + String(color.alpha().toFixed(2)) + ")";
+};
+
+// http://jszen.com/best-way-to-get-unique-values-of-an-array-in-javascript.7.html
+var unique = function(arr) {
+  var n = {};
+  var r = [];
+  var val = null;
+  for(var i = 0; i < arr.length; i++) {
+    val = arr[i];
+    if (!n[val]) {
+      n[val] = true; 
+      r.push(val); 
+    }
+  }
+  return r;
+};
+
+var getChildrenAsArray = function(children) {
+  var layers = [];
+  for (var i = 0; i < children.count(); i++) {
+    layers.push(children.objectAtIndex(i));
+  }
+  log("getChildrenAsArray: layers = " + layers);
+  return layers;
+};
+

@@ -1,23 +1,23 @@
 {
-  "author" : "",
+  "author" : "Peter Wooley",
   "commands" : [
     {
       "script" : "script.cocoascript",
       "handler" : "onRun",
-      "shortcut" : "shift command .",
-      "name" : "Open Selected Layer Colors in Colorpeek",
-      "identifier" : "open layer colors in colorpeek"
+      "shortcut" : "shift control c",
+      "name" : "Show Colors in Colorpeek",
+      "identifier" : "show colors in colorpeek"
     }
   ],
   "menu" : {
     "items" : [
-      "open layer colors in colorpeek"
+      "show colors in colorpeek"
     ],
     "title" : "Colorpeek"
   },
-  "identifier" : "com.peterwooley.sketch.colorpeek-open-selected-colors",
-  "version" : "1.0",
-  "description" : "",
-  "authorEmail" : "",
-  "name" : "Open Layer Colors in Colorpeek"
+  "identifier" : "com.peterwooley.sketch.colorpeek-show-colors",
+  "version" : "1.1",
+  "description" : "Gathers the colors used in your selected layers and shows them in Colorpeek.",
+  "authorEmail" : "peterwooley@gmail.com",
+  "name" : "Show Colors in Colorpeek"
 }
