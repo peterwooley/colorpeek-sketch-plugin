@@ -7,7 +7,7 @@ clone the repository and open `ShowInColorpeek.sketchplugin`.
 
 ## Usage
 * Select a layer
-* Select `Colorpeek > Open Selected Layer Colors in Colorpeek` from the Plugins menu or press `⌘⇪.`
+* Select `Colorpeek > Open Selected Layer Colors in Colorpeek` from the Plugins menu or press `^ ⇪ c`
 
 ## Thanks
   * Thanks to [Freakland's Sketch Browser Preview](https://github.com/Freakland/sketch-browser-preview) plugin for demonstrating how to open a URL in browser form a Sketch Plugin.
